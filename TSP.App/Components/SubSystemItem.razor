@@ -1,0 +1,65 @@
+﻿@inherits SubSystemItemBase
+@if (PageDataModel == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="d-flex">
+        <div class="btn-group">
+            <input type="text" class="form-control"
+                   value="@title" @onchange="@(e=>Search(e))"
+                   placeholder="Filter by key words" />
+            <button type="button" class="btn btn-primary"
+                    @onclick="Filter">
+                Search
+            </button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="@("#myModal"+SubMenuItemId)">
+                Add
+            </button>
+        </div>
+    </div>
+    <GenericList Elements="PageDataModel.Data">
+        <NullTemplate>
+            <p><em>Loading...</em></p>
+        </NullTemplate>
+        <WithElementsTemplate>
+
+            @foreach (var item in PageDataModel.Data)
+                {
+                <SubItemDetailLine @key="item" Item="item"></SubItemDetailLine>
+                }
+            <Pagination TotaPagesQuantity="PageDataModel.PageQuantity" CurrentPage="currentPage" Radius="3"
+                        SelectedPage="SelectedPage"></Pagination>
+
+
+        </WithElementsTemplate>
+    </GenericList>
+}
+<div class="modal" id="@("myModal"+SubMenuItemId)" tabindex="-1" role="dialog" aria-labelledby="myLabel" aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title" id="myLabel">Add a new line</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex h-100 justify-content-center align-items-center">
+                    <input type="text" class="form-control"
+                           @bind-value="@Name"
+                           placeholder="Input a name" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="Add">Confirm</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

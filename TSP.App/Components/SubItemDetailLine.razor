@@ -1,0 +1,89 @@
+﻿@inherits SubItemDetailLineBase
+
+<div class="d-flex flex-column pt-1">
+    <div class="d-flex justify-content-between">
+        <div class="btn-group w-100">
+            <input type="text" readonly class="form-control"
+                   value=@Item.Name
+                   placeholder="Name" @onchange="@(e=>Change(e,PatchUpdateItem.Name))" />
+            <input type="text" class="form-control"
+                   value=@Item.Title
+                   placeholder="Title" @onchange="@(e=>Change(e,PatchUpdateItem.Title))" />
+            <input type="number" class="form-control" style="width:60px;"
+                   value=@Item.Order
+                   @onchange="@(e=>Change(e,PatchUpdateItem.Order))" />
+            <button class="btn btn-primary btn-sm" @onclick="@(() => ShowDetail(Item))">
+                Detail
+            </button>
+            <div class="custom-control custom-switch">
+                @if(Item.Disabled)
+                 {
+                <input type="checkbox" class="custom-control-input" id=@("switch"+Item.Id) checked @onchange="@(e=>Change(e,PatchUpdateItem.Disabled))" />
+                 }
+                 else
+                 {
+                <input type="checkbox" class="custom-control-input" id=@("switch"+Item.Id) @onchange="@(e=>Change(e,PatchUpdateItem.Disabled))" />
+                 }
+                <label class="custom-control-label" for=@("switch"+Item.Id)>Disabled</label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="@Item.IsShowClass card">
+    <div class="d-flex p-3 flex-wrap">
+        <div class="flex-column w-75 pr-3">
+            <div id="@("summernote"+Item.Id)">
+            </div>
+            <div class="pt-1">
+                <button class="btn btn-primary" @onclick="@(() => SaveChanges(Item.Id))">Save changes</button>
+            </div>
+        </div>
+
+        <div class="w-25 d-flex flex-column card" style="min-width:260px;">
+            <img data-toggle="modal" data-target="@("#imageModal"+Item.Id)" class="card-img-top img-fluid" src="@Item.Image" style="cursor:pointer" alt="@Item.Title">
+            <div class="card-body">
+                <InputFile OnChange="HandleSelection" class="btn btn-primary" />
+                @if (selectedFiles != null)
+                {
+                    foreach (var file in selectedFiles)
+                    {
+                        var isLoading = file.Data.Position > 0;
+                        <button class="btn btn-primary" @onclick="() => LoadFile(file)" disabled="@isLoading">
+                        @if (!isLoading)
+                        {
+                            <span>Load</span> 
+                        }
+                        else
+                        {
+                            <span>Loaded @((100.0 * file.Data.Position / file.Size).ToString("0"))%</span>}
+                                </button>
+                        }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="@("imageModal"+Item.Id)" tabindex="-1" role="dialog" aria-labelledby="myLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myLabel">Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex h-100 justify-content-center align-items-center">
+                    <div class="d-flex flex-column">
+                        <img src="@Item.Image" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

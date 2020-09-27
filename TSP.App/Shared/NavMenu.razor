@@ -1,0 +1,74 @@
+﻿
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">TSP Dashboard</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <AuthorizeView>
+            <Authorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="SubSystemPage/1" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> TSP
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="SubSystemPage/2">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Green Haven
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="SubSystemPage/3">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Revolution
+                    </NavLink>
+                </li>
+                
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Policy="@Policies.CanManageContent">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="SubSystemPage/4">
+                        <span class="oi oi-people" aria-hidden="true"></span> Staff
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="SubSystemPage/5">
+                        <span class="oi oi-media-record" aria-hidden="true"></span> Media
+                    </NavLink>
+                </li>
+        </AuthorizeView>
+        <AuthorizeView>
+            <NotAuthorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link"
+                             href="authentication/login">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Log in
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link"
+                             href="https://tsp-dev-idp-server.azurewebsites.net/Identity/Account/Register">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Register
+                    </NavLink>
+                </li>
+            </NotAuthorized>
+        </AuthorizeView>
+
+
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

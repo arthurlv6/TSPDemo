@@ -1,0 +1,27 @@
+﻿
+@page "/SubSystemPage/{SubSystemId:int}"
+@page  "/SubSystemPage"
+@inherits SubSystemPageBase
+@if (TabsModel == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            @foreach (var tab in TabsModel)
+            {
+                <a class="nav-item nav-link @tab.TabHeader" @onclick="(()=>TabClick(tab.Id))" data-toggle="tab" role="tab" aria-controls="@(tab.Name+tab.Id)" aria-selected=@(tab.TabHeaderSelect??"false")>@tab.Name</a>
+            }
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        @foreach (var tab in TabsModel)
+        {
+            <div class="tab-pane fade @tab.TabDetail" id="@(tab.Name+tab.Id)" role="tabpanel" aria-labelledby="nav-home-tab" style="padding-top:10px;">
+                <SubSystemItem SubMenuItemId="@tab.Id"></SubSystemItem>
+            </div>
+        }
+    </div>
+}
