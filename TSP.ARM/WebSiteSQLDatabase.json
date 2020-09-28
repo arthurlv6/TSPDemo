@@ -128,7 +128,30 @@
       "metadata": {
         "description": "Describes the performance level for Edition"
       }
-    }
+    },
+    "tsp-app-server": {
+      "type": "string",
+      "defaultValue": "tsp-dev-app"
+    },
+    "tsp-website-server": {
+      "type": "string",
+      "defaultValue": "tsp-dev-website"
+    },
+    "tspAPIStorageType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+      "tsp-api-storage": {
+        "type": "string",
+        "defaultValue": "tspdevapistorage"
+      }
   },
 
   "resources": [
@@ -391,6 +414,108 @@
       "properties": {
         "applicationId": "[resourceId('Microsoft.Web/sites', parameters('tsp-api-server'))]"
       }
+    },
+    {
+      "name": "[parameters('tsp-app-server')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName')))]": "Resource",
+        "displayName": "tsp-app"
+      },
+      "properties": {
+        "name": "[parameters('tsp-app-server')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
+      },
+      "resources": [
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', parameters('tsp-app-server'))]"
+          ],
+          "tags": {
+            "displayName": "tsp-app-settings"
+          },
+          "properties": {
+            "OidcConfiguration__Authority":"[concat('https://',parameters('tsp-idp-server'), '.azurewebsites.net')]",
+            "OidcConfiguration__ClientId": "tsp",
+            //"OidcConfiguration__DefaultScopes": ["openid","profile","email","tspapi","roleclaim"],
+            "OidcConfiguration__RedirectUri": "[concat('https://',parameters('tsp-app-server'), '.azurewebsites.net/authentication/login-callback')]",
+              "OidcConfiguration__PostLogoutRedirectUri":"[concat('https://',parameters('tsp-app-server'), '.azurewebsites.net/authentication/logout-callback')]",
+            "OidcConfiguration__ResponseType": "code",
+            "UserOptions__NameClaim": "email"
+          }
+        }
+      ]
+    },
+    {
+      "name": "[parameters('tsp-website-server')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName')))]": "Resource",
+        "displayName": "tsp-website"
+      },
+      "properties": {
+        "name": "[parameters('tsp-website-server')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
+      },
+      "resources": [
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', parameters('tsp-website-server'))]"
+          ],
+          "tags": {
+            "displayName": "tsp-website-settings"
+          },
+          "properties": {
+            "api": "[concat('https://',parameters('tsp-api-server'), '.azurewebsites.net')]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "app-insight",
+      "type": "Microsoft.Insights/components",
+      "location": "East US",
+      "apiVersion": "2014-04-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('tsp-app-server'))]"
+      ],
+      "tags": {
+        "displayName": "Component app-insight"
+      },
+      "properties": {
+        "applicationId": "[resourceId('Microsoft.Web/sites', parameters('tsp-app-server'))]"
+      }
+    },
+    {
+      "name": "[parameters('tsp-api-storage')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-01-01",
+      "sku": {
+        "name": "[parameters('tspAPIStorageType')]"
+      },
+      "dependsOn": [],
+      "tags": {
+        "displayName": "tspAPIStorage"
+      },
+      "kind": "Storage"
     }
   ]
+  
 }

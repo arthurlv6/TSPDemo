@@ -19,8 +19,9 @@ namespace TSP.App.Services
         }
         public async Task<PageDataModel<SubItemDetailModel>> GetSubItemDetailAsync(string submenuItemId,int page, int size, string keyword, string token)
         {
-            if (!_httpClient.DefaultRequestHeaders.Contains("Authorization") && !string.IsNullOrEmpty(token))
-                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            //if (!_httpClient.DefaultRequestHeaders.Contains("Authorization") && !string.IsNullOrEmpty(token))
+            //    _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+
             string url = $"api/SubItemDetail?page={page}&size={size}&keyword={keyword}&subMenuItemId={submenuItemId}";
             var httpResponseMessage = await _httpClient.GetAsync(url);
             if (httpResponseMessage.IsSuccessStatusCode)

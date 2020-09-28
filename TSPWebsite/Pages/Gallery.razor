@@ -1,0 +1,103 @@
+﻿@page "/gallery"
+@inject IJSRuntime JSRuntime
+    <div class=" w-100 h-100">
+        @if (List == null)
+        {
+            <Loading></Loading>
+        }
+        else
+        {
+            <div class="container my-3">
+                <div class="d-flex flex-column">
+                    <div class="d-flex justify-content-center">
+                        <h3 style="cursor:pointer" @onclick="()=>Filter()">Photo gallery</h3>
+                    </div>
+                    <div class="row">
+                        @{
+                            foreach (var item in GroupNames)
+                            {
+                                <div class="col-md-6 col-sm-12 col-lg-2 text-center">
+                                    <a class="@item.LinkColor" @onclick="()=>Filter(item.Name)" style="min-width:100px;cursor:pointer">@item.Name</a>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="container pt-3" style="min-height:500px;">
+                    <div class="row">
+                            @foreach (var item in FilteredList)
+                            {
+                                <div class="col-md-6 col-sm-12 col-lg-3 text-center pb-3">
+                                    <div class="card shadow minWidth260 animate__animated animate__fadeInUp">
+                                        <div class="card-body p-1">
+                                            <img class="card-img-top img-fluid " @onclick="()=>ModalShow(item.Id)" src="@item.Image" style="cursor:pointer" alt="@item.Title">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                    </div>
+                </div>
+                <GalleryShow @ref="GalleryShow" CloseEventCallback="@Dialog_OnDialogClose" List="@FilteredList"></GalleryShow>
+            </div>
+        }
+        <FootBar></FootBar>
+    </div>
+
+@code{
+    [Inject]
+    public SubItemDetailService Service { get; set; }
+    public List<SubItemDetailModel> List { get; set; }
+    public List<SubItemDetailModel> FilteredList { get; set; }
+    public List<Group> GroupNames { get; set; }
+
+    public class Group
+    {
+        public string Name { get; set; }
+        public string LinkColor { get; set; }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        List = await Service.GetSubItemDetailAsync("3");
+        List = List.Where(d => d.Title != null).ToList();
+        GroupNames = List.GroupBy(d => d.Title).Select(d => new Group() { Name=d.Key, LinkColor="text-info" }).ToList();
+        FilteredList = List;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("blazorInterop.initializeScreenToBodyPage");
+            //await JSRuntime.InvokeVoidAsync("blazorInterop.initializeGallery");
+            await JSRuntime.InvokeVoidAsync("blazorInterop.initializeHideDropdown");
+            //
+        }
+    }
+    protected GalleryShow GalleryShow { get; set; }
+    protected void Dialog_OnDialogClose()
+    {
+        StateHasChanged();
+    }
+    protected void ModalShow(int id)
+    {
+        GalleryShow.Show(id);
+    }
+    protected void Filter(string title="all")
+    {
+        foreach (var item in GroupNames)
+        {
+            item.LinkColor = "text-info";
+        }
+        if (title == "all")
+        {
+            FilteredList = List;
+        }
+        else
+        {
+            var filteredItem = GroupNames.FirstOrDefault(d => d.Name == title);
+            filteredItem.LinkColor = "text-primary";
+            FilteredList = List.Where(d => d.Title == title).ToList();
+        }
+    }
+}

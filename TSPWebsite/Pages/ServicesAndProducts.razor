@@ -1,0 +1,68 @@
+﻿@page "/ServicesAndProducts"
+    <div class="w-100 h-100">
+        @if (List == null)
+        {
+            <Loading></Loading>
+        }
+        else
+        {
+            int i = 0;
+            <div class="container my-3">
+                @foreach (var item in List)
+                {
+                    i++;
+                    <div class="card mb-4 w-100">
+                        <div class="row no-gutters">
+                            @if ((i % 2) == 1)
+                            {
+                                <div class="col-lg-4">
+                                    <img src="@item.Image" class="card-img h-100" alt="@item.Title">
+                                </div>
+                                <div class="col-lg-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@item.Title</h5>
+                                        @((MarkupString)item.Paragraph)
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-lg-8 order-last order-lg-first">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@item.Title</h5>
+                                        @((MarkupString)item.Paragraph)
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <img src="@item.Image" class="card-img" alt="@item.Title">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        <FootBar></FootBar>
+    </div>
+
+@inject IJSRuntime JSRuntime
+@code{
+    [Inject]
+    public SubItemDetailService Service { get; set; }
+    public List<SubItemDetailModel> List { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        List = await Service.GetSubItemDetailAsync("5");
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("blazorInterop.initializeScreenToBodyPage");
+            await JSRuntime.InvokeVoidAsync("blazorInterop.initializeHideDropdown");
+        }
+    }
+}

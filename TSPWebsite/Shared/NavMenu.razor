@@ -1,0 +1,142 @@
+﻿@inject IJSRuntime JSRuntime
+<header id="topMenuLinks" style="display:none" class="header header bg-custom-darkgreen">
+    <div class="container">
+        <h1 class="logo">
+            <a class="scrollto" href="">
+                TSP
+            </a>
+        </h1><!--//logo-->
+        <nav class="main-nav navbar-expand-lg float-right navbar-inverse" role="navigation">
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button><!--//nav-toggle-->
+
+            <div id="navbar-collapse" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item text-uppercase">
+                        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                            Home
+                        </NavLink>
+                    </li>
+                    <li class="nav-item text-uppercase">
+                        <NavLink class="nav-link" href="ServicesAndProducts">
+                            Services & Products
+                        </NavLink>
+                    </li>
+                    <li class="nav-item text-uppercase">
+                        <NavLink class="nav-link" href="team">
+                            Our team
+                        </NavLink>
+                    </li>
+                    <li class="nav-item text-uppercase">
+                        <NavLink class="nav-link" href="gallery">
+                            Gallery
+                        </NavLink>
+                    </li>
+                    <li class="nav-item text-uppercase">
+                        <NavLink class="nav-link" href="contactus">
+                            Contact us
+                        </NavLink>
+                    </li>
+                </ul><!--//nav-->
+            </div><!--//navabr-collapse-->
+        </nav><!--//main-nav-->
+    </div><!--//container-->
+</header><!--//header-->
+
+
+
+<div id="videobackground" class="d-flex h-100 w-100">
+    <div class="h-100 w-100 align-items-end">
+        <section>
+            <div class="overlay"></div>
+            <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop" poster="/images/backgrounds/videoPreload.jpg">
+                <source src="videos/video540new.mp4" type="video/mp4">
+            </video>
+        </section>
+        <div id="topbox" class="fixed-top flex-column container mt-5 pt-5">
+            <div class="d-flex flex-row bg-white rounded-top justify-content-between">
+                <div class="p-4 mx-3">
+                    <img style="width:150px;" src="images/main/logo.png" />
+                </div>
+                <div class="d-flex align-items-center pr-5">
+                    <div class="d-flex align-items-center px-3 border-right">
+                        <div class="pr-3">
+                            <i class="fas fa-mobile-alt fa-2x"></i>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <i><small><a href="callto:021 582 631" target="_blank">M: 021 582 631</a><a href="callto:06 368 8850" target="_blank">P: 06 368 8850</a></small>  </i>
+                            <i class="font-weight-bolder">Call Us</i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center px-3 border-right">
+                        <div class="pr-3">
+                            <i class="fas fa-envelope-open-text fa-2x"></i>
+                        </div>
+                        <div class="d-flex flex-column">
+
+                            <i><small><a href="mailto:admin@tspconstruction.co.nz" target="_blank">admin@tspconstruction.co.nz</a></small></i>
+                            <i class="font-weight-bolder">Email Us</i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center px-3">
+                        <div class="pr-3">
+                            <i class="fas fa-map-marked-alt fa-2x"></i>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <i><small><a href="http://maps.google.com/?q=16 Sheffield Street, Levin" target="_blank">16 Sheffield Street, Levin</a></small> </i>
+                            <i class="font-weight-bolder">Our address</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex bg-custom-darkgreen justify-content-around rounded-bottom">
+                <NavLink class="nav-item nav-link flex-grow-1 text-center text-white font-weight-bold" href="" Match="NavLinkMatch.All">
+                    Home
+                </NavLink>
+                <NavLink class="nav-item nav-link flex-grow-1 text-center text-white font-weight-bold" href="ServicesAndProducts">
+                    Services & Products
+                </NavLink>
+                <NavLink class="nav-item nav-link flex-grow-1 text-center text-white font-weight-bold" href="team">
+                    Meet the team
+                </NavLink>
+                <NavLink class="nav-item nav-link flex-grow-1 text-center text-white font-weight-bold" href="gallery">
+                    Gallery
+                </NavLink>
+                <NavLink class="nav-item nav-link flex-grow-1 text-center text-white font-weight-bold" href="contactus">
+                    Contact us
+                </NavLink>
+            </div>
+        </div>
+        <div class="mx-0 carousel-indicators d-flex flex-column align-items-center">
+            <div class="pb-3">
+                <img class="mr-2 ml-0" style="height: 120px;" src="images/NZCB-Logo-FINAL_RGB.png">
+                <img class="m-2 rounded-circle" style="max-width: 100px; height: 100px; " src="images/LBP-Logo-green-version.jpg">
+                <img class="ml-2 rounded-circle border bg-white" style="max-width: 100px; height: 100px; " src="images/Halo_Logo_1Colour_Purple_CMYK.png">
+            </div><!--//item-content-inner-->
+            <div class="pb-5 pb-lg-3">
+                <i @onclick="click" class="fas fa-chevron-circle-down text-white fa-4x"></i>
+            </div>
+        </div>
+    </div><!--//carousel-inner-->
+</div>
+
+@code {
+
+    async Task click()
+    {
+        await JSRuntime.InvokeVoidAsync("blazorInterop.initializeScreenToBodyPage");
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("blazorInterop.initializeTopbox");
+        }
+    }
+}

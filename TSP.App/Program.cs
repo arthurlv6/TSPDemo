@@ -36,16 +36,17 @@ namespace TSP.App
                     TSP.Shared.Policies.CanManageContentPolicy());
             });
 
+            
             builder.Services.AddHttpClient<SubSystemService>(
-                client => client.BaseAddress = new Uri("https://localhost:44383/")) //API
+                client => client.BaseAddress = new Uri("https://tsp-dev-api-server.azurewebsites.net/")) //API
                 .AddHttpMessageHandler<TSPApiAuthorizationMessageHandler>();
             
             builder.Services.AddHttpClient<SubMenuItemService>(
-                client => client.BaseAddress = new Uri("https://localhost:44383/"))
+                client => client.BaseAddress = new Uri("https://tsp-dev-api-server.azurewebsites.net/"))
                 .AddHttpMessageHandler<TSPApiAuthorizationMessageHandler>();
 
             builder.Services.AddHttpClient<SubItemDetailService>(
-                client => client.BaseAddress = new Uri("https://localhost:44383/"))
+                client => client.BaseAddress = new Uri("https://tsp-dev-api-server.azurewebsites.net/"))
                 .AddHttpMessageHandler<TSPApiAuthorizationMessageHandler>();
 
             builder.Services.AddScoped<GlobalMessage>();

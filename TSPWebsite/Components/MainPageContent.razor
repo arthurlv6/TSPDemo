@@ -1,0 +1,6 @@
+﻿<h3>@Item.Title </h3>
+@((MarkupString)Item.Paragraph)
+@code {
+    [Parameter]
+    public SubItemDetailModel Item { get; set; }
+}

@@ -35,7 +35,7 @@ namespace TSP.API.Controllers
             configuration = _configuration;
         }
         [HttpGet]
-        [Authorize(Policy = Policies.CanManageContent)]
+        [AllowAnonymous]
         public async Task<IActionResult> Get(int submenuItemId = 0, int page = 1, int size = 20, string keyword = "")
         {
             if (page < 1) return BadRequest("page can't be negative.");

@@ -1,0 +1,108 @@
+﻿@page "/team"
+    <div class="w-100 h-100">
+        @if (List == null)
+        {
+            <Loading></Loading>
+        }
+        else
+        {
+            int i = 0;
+    <div class="container my-3">
+        <div class="row">
+            <div class="col-12 col-lg-6 m-auto">
+                <h4>@Team1.Title</h4>
+                @((MarkupString)Team1.Paragraph)
+            </div>
+            <div class="col-12 col-lg-6 pl-lg-0 pl-3">
+                <div class="card">
+                    <img class="card-img-top img-fluid" src="@team1Picture.Image" alt="@team1Picture.Title">
+                    <div class="card-body">
+                        <!--!-->
+                        <p class="card-text">
+                            @((MarkupString)team1Picture.Paragraph)
+                        </p><!--!-->
+                    </div><!--!-->
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-lg-6 pr-lg-0 pr-3 order-last order-lg-first">
+                <div class="card">
+                    <img class="card-img-top img-fluid" src="@team2Picture.Image" alt="@team1Picture.Title">
+                    <div class="card-body">
+                        <!--!-->
+                        <p class="card-text">
+                            @((MarkupString)team2Picture.Paragraph)
+                        </p><!--!-->
+                    </div><!--!-->
+                </div>
+            </div>
+            <div class="col-12 col-lg-6  m-auto">
+                <h4>@Team2.Title</h4>
+                @((MarkupString)Team2.Paragraph)
+            </div>
+        </div>
+        <h4 class="pt-3">
+            Client Testimonial
+        </h4>
+        @foreach (var item in Testimonials.OrderBy(d => d.Order))
+        {
+        i++;
+        string floatDirection = "float-right";
+        string margin = "ml-3";
+        if ((i % 2) == 1)
+        {
+        floatDirection = "float-left";
+        margin = "mr-3";
+        }
+        <div>
+            @if (!string.IsNullOrEmpty(item?.Image))
+            {
+                <img src="@item.Image" class="rounded @margin d-block img-thumbnail @floatDirection" width="200" height="200" alt="commercial building" />
+            }
+            else
+            {
+                <img src="images/no-photo.png" class="rounded mx-auto d-block img-thumbnail @floatDirection" width="200" height="200" alt="commercial building" />
+            }
+            @((MarkupString)item.Paragraph)
+        </div>
+        <hr />
+        }
+    </div>
+        }
+        <FootBar></FootBar>
+    </div>
+
+@inject IJSRuntime JSRuntime
+
+@code{
+    [Inject]
+    public SubItemDetailService Service { get; set; }
+    public List<SubItemDetailModel> List { get; set; }
+    public SubItemDetailModel Team1 { get; set; }
+    public SubItemDetailModel Team2 { get; set; }
+    public SubItemDetailModel team1Picture { get; set; }
+    public SubItemDetailModel team2Picture { get; set; }
+
+    public List<SubItemDetailModel> Testimonials { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        List = await Service.GetSubItemDetailAsync("2");
+        Team1 = List.FirstOrDefault(d => d.Name == "Team1");
+        Team2 = List.FirstOrDefault(d => d.Name == "Team2");
+        team1Picture = List.FirstOrDefault(d => d.Name == "team1Picture");
+        team2Picture = List.FirstOrDefault(d => d.Name == "team2Picture");
+
+        Testimonials = List.Where(d => d.Name == "Testimonial").ToList();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("blazorInterop.initializeScreenToBodyPage");
+            await JSRuntime.InvokeVoidAsync("blazorInterop.initializeHideDropdown");
+
+        }
+    }
+}

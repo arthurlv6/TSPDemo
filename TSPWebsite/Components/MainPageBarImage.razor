@@ -1,0 +1,46 @@
+﻿<div class="flip-card pt-3 w-100 @lastOneMargintop @hideInSmall d-lg-block">
+    <div class="flip-card-inner">
+        <div class="flip-card-front">
+            @if (Item != null && !string.IsNullOrEmpty(Item?.Image))
+            {
+                <img src="@Item.Image" class="rounded mx-auto d-block img-thumbnail mainParalImage" alt="commercial building" />
+            }
+            else
+            {
+                <img src="images/no-photo.png" class="rounded mx-auto d-block img-thumbnail mainParalImage" alt="commercial building" />
+            }
+        </div>
+        <div class="flip-card-back">
+            @((MarkupString)Item.Paragraph)
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public SubItemDetailModel Item { get; set; }
+    [Parameter]
+    public bool Last { get; set; } = false;
+    [Inject]
+    private IJSRuntime JSRuntime{ get; set; }
+
+    string lastOneMargintop = "mr-3";
+    string hideInSmall = "d-none";
+    protected override void OnInitialized()
+    {
+        if (Last)
+        {
+            lastOneMargintop = "";
+            hideInSmall = "";
+        }
+
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("blazorInterop.setParaImageHeight");
+        }
+    }
+}

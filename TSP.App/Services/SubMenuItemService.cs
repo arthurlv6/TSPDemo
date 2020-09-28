@@ -20,8 +20,8 @@ namespace TSP.App.Services
         {
             try
             {
-                if (!httpClient.DefaultRequestHeaders.Contains("Authorization") && !string.IsNullOrEmpty(token))
-                    httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                //if (!httpClient.DefaultRequestHeaders.Contains("Authorization") && !string.IsNullOrEmpty(token))
+                //    httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
                 string url = @"api/submenuitem/"+subSystemId;
                 var data = await httpClient.GetStreamAsync(url);

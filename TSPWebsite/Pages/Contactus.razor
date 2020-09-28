@@ -1,0 +1,128 @@
+﻿@page "/contactus"
+    <div class="w-100 h-100">
+        @if (List == null)
+        {
+            <Loading></Loading>
+        }
+        else
+        {
+            <div class="container my-3">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <h4>Your message</h4>
+                        <EditForm Model="@ContactUsModel" OnValidSubmit="@HandleValidSubmit">
+                            <DataAnnotationsValidator />
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" @bind="@ContactUsModel.Name" id="name" placeholder="Name">
+                                <ValidationMessage class="offset-sm-3 col-sm-8 text-warning" For="@(() => ContactUsModel.Name)" />
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Email address</label>
+                                <input type="email" class="form-control" id="exampleInputEmail1" @bind="@ContactUsModel.Email" aria-describedby="emailHelp" placeholder="Enter email">
+                                <ValidationMessage class="offset-sm-3 col-sm-8 text-warning" For="@(() => ContactUsModel.Email)" />
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea class="form-control" id="message" @bind="@ContactUsModel.Message" rows="3"></textarea>
+                                <ValidationMessage class="offset-sm-3 col-sm-8 text-warning" For="@(() => ContactUsModel.Message)" />
+                            </div>
+                            <div class="form-group">
+                                <ReCAPTCHA @ref="reCAPTCHAComponent" SiteKey="6LdCfbAZAAAAADF9AU8obq1f9Rvi12ZGhlsAh1De" OnSuccess="OnSuccess" OnExpired="OnExpired" />
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Send" class="btn btn-primary btn-sm" disabled="@DisablePostButton" />
+                            </div>
+                        </EditForm>
+                        @((MarkupString)List.FirstOrDefault(d=>d.Name=="Policy")?.Paragraph)
+                        
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <h4>Visit us</h4>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3027.9041799417028!2d175.26526131540248!3d-40.63199507934067!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d408cb3d39a4367%3A0xa4fee7b33701cc7d!2s16%20Sheffield%20Street%2C%20Horowhenua%2C%20Levin%205510!5e0!3m2!1sen!2snz!4v1591433903786!5m2!1sen!2snz" class="w-100" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+
+                        <img class="img-fluid w-100" alt="TSPConstructionOffice" src="@((MarkupString)List.FirstOrDefault(d=>d.Name=="Address")?.Image)" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <FootBar></FootBar>
+    </div>
+@code{ 
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
+    [Inject]
+    public GlobalMessage GlobalMsg { get; set; }
+    [Inject]
+    public NavigationManager Navigation { get; set; }
+    [Inject]
+    public CaptchaService CaptchaService { get; set; }
+    [Inject]
+    public ContactUsService ContactUsService { get; set; }
+    [Inject]
+    public SubItemDetailService SubItemDetailService { get; set; }
+
+    public ContactUsModel ContactUsModel { get; set; } = new ContactUsModel();
+    public List<SubItemDetailModel> List { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GlobalMsg.SetMessage("d-block");
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        List = await SubItemDetailService.GetSubItemDetailAsync("4");
+    }
+
+    bool firstRender = true;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("blazorInterop.initializeScreenToBodyPage");
+            await JSRuntime.InvokeVoidAsync("blazorInterop.initializeHideDropdown");
+        }
+    }
+    private ReCAPTCHA reCAPTCHAComponent;
+
+    private bool ValidReCAPTCHA = false;
+
+    private bool ServerVerificatiing = false;
+
+    private bool DisablePostButton => !ValidReCAPTCHA || ServerVerificatiing;
+
+    private void OnSuccess()
+    {
+        ValidReCAPTCHA = true;
+    }
+
+    private void OnExpired()
+    {
+        ValidReCAPTCHA = false;
+    }
+
+    protected async Task HandleValidSubmit()
+    {
+
+        if (ValidReCAPTCHA)
+        {
+            var response = await reCAPTCHAComponent.GetResponseAsync();
+            try
+            {
+                ServerVerificatiing = true;
+                StateHasChanged();
+                await CaptchaService.PostAsync(new SampleAPIArgs { reCAPTCHAResponse = response });
+                await ContactUsService.PostAsync(ContactUsModel);
+
+                Navigation.NavigateTo("/");
+            }
+            catch (HttpRequestException e)
+            {
+                await JSRuntime.InvokeAsync<object>("alert", e.Message);
+                ServerVerificatiing = false;
+                StateHasChanged();
+            }
+        }
+    }
+}

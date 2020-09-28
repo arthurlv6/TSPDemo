@@ -1,0 +1,104 @@
+﻿@page "/"
+<div class="w-100 h-100">
+    @if (List == null)
+    {
+        <Loading></Loading>
+    }
+    else
+    {
+        <div class="container mt-3" style="min-height:300px;">
+            <MainPageContent Item="@List.FirstOrDefault(d => d.Name == "INTRODUCTION")"></MainPageContent>
+            <MainPageContent Item="@List.FirstOrDefault(d => d.Name == "COMMERCIAL")"></MainPageContent>
+        </div>
+        <div class="mainParallax1">
+            <div class="container h-100 d-flex align-items-start justify-content-between">
+                <MainPageBarImage Item="@List.FirstOrDefault(d => d.Name == "COMMERCIAL Image1")"></MainPageBarImage>
+                <MainPageBarImage Item="@List.FirstOrDefault(d => d.Name == "COMMERCIAL Image2")"></MainPageBarImage>
+                <MainPageBarImage Item="@List.FirstOrDefault(d => d.Name == "COMMERCIAL Image3")" Last="true"></MainPageBarImage>
+            </div>
+        </div>
+        <div class="container mt-3" style="min-height:300px;">
+            <MainPageContent Item="@List.FirstOrDefault(d => d.Name == "RESIDENTIAL")"></MainPageContent>
+        </div>
+        <div class="mainParallax2">
+            <div class="container h-100 d-flex align-items-start justify-content-between">
+                <MainPageBarImage Item="@List.FirstOrDefault(d => d.Name == "RESIDENTIAL Image1")"></MainPageBarImage>
+                <MainPageBarImage Item="@List.FirstOrDefault(d => d.Name == "RESIDENTIAL Image2")"></MainPageBarImage>
+                <MainPageBarImage Item="@List.FirstOrDefault(d => d.Name == "RESIDENTIAL Image3")" Last="true"></MainPageBarImage>
+            </div>
+        </div>
+        <div class="container my-3">
+            <div class="row">
+                <div class="col-12 col-lg-7">
+                    <h4>Frequently asked questions</h4>
+                    <!-- Accordion -->
+                    <div id="accordionExample" class="accordion">
+                        @{
+                            int i = 0;
+                            string ariaExpanded = "false";
+                            string show = "";
+                            foreach (var item in List.Where(d => d.Name == "FAQ"))
+                            {
+                                i++;
+                                if (i == 1)
+                                {
+                                    ariaExpanded = "true";
+                                    show = "show";
+                                }
+                                else
+                                {
+                                    ariaExpanded = "false";
+                                    show = "";
+                                }
+                                <div class="card">
+                                    <div class="card-header shadow-sm border-0" style="background-color:#6099ff">
+                                        <h6 class="mb-0 font-weight-bold">
+                                            <a href="#" data-toggle="collapse" data-target="@("#collapse" + item.Id)" aria-expanded="@ariaExpanded" aria-controls="@("collapse" + item.Id)" class="d-block position-relative text-white collapsible-link py-2">
+                                                <i class="far fa-question-circle pr-2"></i>@item.Title
+                                            </a>
+                                        </h6>
+                                    </div>
+                                    <div id="@("collapse" + item.Id)" aria-labelledby="@("collapse" + item.Id)" data-parent="#accordionExample" class="collapse @show">
+                                        <div class="card-body p-3">
+                                            <p class="font-weight-light m-0">
+                                                @((MarkupString)item.Paragraph)
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="col-12 col-lg-5">
+                    <h4>Visit us</h4>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3027.9041799417028!2d175.26526131540248!3d-40.63199507934067!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d408cb3d39a4367%3A0xa4fee7b33701cc7d!2s16%20Sheffield%20Street%2C%20Horowhenua%2C%20Levin%205510!5e0!3m2!1sen!2snz!4v1591433903786!5m2!1sen!2snz" class="w-100" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+
+                </div>
+            </div>
+        </div>
+    }
+    <FootBar></FootBar>
+</div>
+
+
+@inject IJSRuntime JSRuntime
+@code{
+    [Inject]
+    public SubItemDetailService Service { get; set; }
+    public List<SubItemDetailModel> List { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        List = await Service.GetSubItemDetailAsync("1");
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("blazorInterop.initializeHideDropdown");
+        }
+    }
+}
