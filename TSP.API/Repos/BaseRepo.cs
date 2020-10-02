@@ -69,7 +69,7 @@ namespace TSP.API.Repos
             {
                 return (await dBContext.Set<T>().FirstAsync(d => d.Id == m.Id))
                 .Map(d => mapper.Map(m, d))
-                .Action(async d=> await dBContext.SaveChangesAsync())
+                .Action(d=> dBContext.SaveChanges())
                 .Map(d=> Maybe.Ok(true));
             }
             catch (Exception ex)

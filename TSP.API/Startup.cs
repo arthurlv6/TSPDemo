@@ -70,6 +70,7 @@ namespace TSP.API
             //services.AddControllers();
             services.AddControllers(configure => configure.Filters.Add(new AuthorizeFilter(requireAuthenticatedUserPolicy)));
 
+            services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("store-v1", new Microsoft.OpenApi.Models.OpenApiInfo

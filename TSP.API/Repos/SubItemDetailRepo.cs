@@ -15,23 +15,31 @@ namespace TSP.API.Repos
         public SubItemDetailRepo(AppDbContext _dBContext, IMapper _mapper, ILogger<SubItemDetailRepo> logger) : base(_dBContext, _mapper,logger)
         {
         }
-        public async Task<Tuple<IEnumerable<M>, double>> GetPageData<M>(int SubMenuItemId = 0,int page = 1, int size = 20, string keyword = "") where M : BaseModel
+        public async Task<Maybe<Tuple<IEnumerable<M>, double>>> GetPageDataAsync<M>(int SubMenuItemId = 0,int page = 1, int size = 20, string keyword = "") where M : BaseModel
         {
-            var queryable = dBContext.Set<SubItemDetail>().Where(d=>!d.Disabled).OrderBy(d=>d.Order).AsQueryable();
-            Expression<Func<SubItemDetail, bool>> nameExpected = d => true;
-            if (!string.IsNullOrEmpty(keyword))
+            try
             {
-                nameExpected = d => d.Title.Contains(keyword);
+                var queryable = dBContext.Set<SubItemDetail>().Where(d => !d.Disabled).OrderBy(d => d.Order).AsQueryable();
+                Expression<Func<SubItemDetail, bool>> nameExpected = d => true;
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    nameExpected = d => d.Title.Contains(keyword);
+                }
+
+                Expression<Func<SubItemDetail, bool>> categoryExpected = d => true;
+                if (SubMenuItemId > 0)
+                    categoryExpected = d => d.SubMenuItemId == SubMenuItemId;
+
+                double count = await queryable.Where(nameExpected).Where(categoryExpected).CountAsync();
+                double pagesQuantity = Math.Ceiling(count / size);
+                var pagination = new PaginationModel() { Page = page, QuantityPerPage = size };
+                
+                return Maybe.Ok(new Tuple<IEnumerable<M>, double>(await queryable.Where(nameExpected).Where(categoryExpected).Paginate(pagination).Select(d => d.ToModel<M>(mapper)).ToListAsync(), pagesQuantity));
             }
-
-            Expression<Func<SubItemDetail, bool>> categoryExpected = d => true;
-            if (SubMenuItemId > 0)
-                categoryExpected = d => d.SubMenuItemId == SubMenuItemId;
-
-            double count = await queryable.Where(nameExpected).Where(categoryExpected).CountAsync();
-            double pagesQuantity = Math.Ceiling(count / size);
-            var pagination = new PaginationModel() { Page = page, QuantityPerPage = size };
-            return new Tuple<IEnumerable<M>, double>(await queryable.Where(nameExpected).Where(categoryExpected).Paginate(pagination).Select(d => d.ToModel<M>(mapper)).ToListAsync(), pagesQuantity);
+            catch (Exception ex)
+            {
+                return Maybe.Fail<Tuple<IEnumerable<M>, double>>(ex.Message);
+            }
         }
         public async Task<Maybe<bool>> UpdateImageAsync(int id, string imagePath)
         {

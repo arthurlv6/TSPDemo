@@ -41,11 +41,14 @@ namespace TSP.API.Controllers
             if (page < 1) return BadRequest("page can't be negative.");
             if (size < 1) return BadRequest("Page size can't be negative");
 
-            var temp = await repo.GetPageData<SubItemDetailModel>(submenuItemId, page, size, keyword);
-            HttpContext.InsertPaginationParameterInResponse(temp.Item2);
-            return Ok(temp.Item1);
+            var temp = await repo.GetPageDataAsync<SubItemDetailModel>(submenuItemId, page, size, keyword);
+            if (temp.IsSuccess)
+            {
+                HttpContext.InsertPaginationParameterInResponse(temp.Value.Item2);
+                return Ok(temp.Value.Item1);
+            }
+                return BadRequest(temp.Error);
         }
-        [Authorize]
         [HttpPatch("{id}")]
         public async Task<IActionResult> PartiallyUpdate(int id, [FromBody] JsonPatchDocument<SubItemDetailModel> model)
         {
@@ -61,8 +64,10 @@ namespace TSP.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-            await repo.UpdateAsync<SubItemDetail, SubItemDetailModel>(record.Value);
-            return NoContent();
+            var maybe=await repo.UpdateAsync<SubItemDetail, SubItemDetailModel>(record.Value);
+            if(maybe.IsSuccess)
+                return NoContent();
+            return BadRequest(maybe.Error);
         }
 
         [AllowAnonymous]
@@ -94,7 +99,7 @@ namespace TSP.API.Controllers
             return Ok(sasUrl);
         }
         [HttpGet("image/{id}")]
-        public async Task<IActionResult> Get(int id) // for normal hosting.
+        public async Task<IActionResult> GetAsync(int id) // for normal hosting.
         {
             var noPhoto = PhysicalFile(env.ContentRootPath + "\\uploaded\\no-photo.png", "image/jpeg");
             var temp = await repo.GetOneAsync<SubItemDetail, SubItemDetailModel>(id);
@@ -114,7 +119,6 @@ namespace TSP.API.Controllers
             return PhysicalFile(env.ContentRootPath + "\\uploaded\\" + temp.Value.Image, "image/jpeg");
         }
 
-        [Authorize]
         [HttpPost("detail")]
         public IActionResult Post([FromBody] AddDetailModel model)
         {
@@ -132,13 +136,8 @@ namespace TSP.API.Controllers
 
             var result = repo.Add(subItemDetailModel);
             if (result.IsSuccess)
-            {
                 return Created("SubItemDetail", new AddDetailModel() { Id = result.Value.Id, MenuId = result.Value.SubMenuItemId, Name = result.Value.Name });
-            }
-            else
-            {
-                return BadRequest(result.Error);
-            }
+            return BadRequest(result.Error);
         }
     }
 }
