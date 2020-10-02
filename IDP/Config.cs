@@ -42,8 +42,21 @@ namespace IDP
                     PostLogoutRedirectUris = { "https://tsp-dev-app.azurewebsites.net/authentication/logout-callback" },
                     AllowedScopes = { "openid", "profile", "email", "tspapi", "roleclaim" },
                     AllowedCorsOrigins = { "https://tsp-dev-app.azurewebsites.net" },
-                    RequireConsent = true
-                }             
+                    RequireConsent = false
+                }       ,
+                new Client
+                {
+                    ClientId = "tspDevelopment",
+                    ClientName = "tsp APP",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequireClientSecret = false,
+                    RequirePkce = true,
+                    RedirectUris = { "https://localhost:44355/authentication/login-callback" },
+                    PostLogoutRedirectUris = { "https://localhost:44355/authentication/logout-callback" },
+                    AllowedScopes = { "openid", "profile", "email", "tspapi", "roleclaim" },
+                    AllowedCorsOrigins = { "https://localhost:44355" },
+                    RequireConsent = false
+                }
             };
     }
 }

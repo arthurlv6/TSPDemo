@@ -19,19 +19,21 @@ namespace TSP.App.Services
         }
         public async Task<PageDataModel<SubItemDetailModel>> GetSubItemDetailAsync(string submenuItemId,int page, int size, string keyword, string token)
         {
-            //if (!_httpClient.DefaultRequestHeaders.Contains("Authorization") && !string.IsNullOrEmpty(token))
-            //    _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-
+            if (!_httpClient.DefaultRequestHeaders.Contains("Authorization") && !string.IsNullOrEmpty(token))
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
             string url = $"api/SubItemDetail?page={page}&size={size}&keyword={keyword}&subMenuItemId={submenuItemId}";
             var httpResponseMessage = await _httpClient.GetAsync(url);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 var data = await httpResponseMessage.Content.ReadAsStreamAsync();
                 var deserializedData = await JsonSerializer.DeserializeAsync<List<SubItemDetailModel>>(data, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+                int pagesQuantity = int.Parse( httpResponseMessage.Headers.TryGetValues("Page-Quantity", out var values) ? values.FirstOrDefault() : "1");
+
                 return new PageDataModel<SubItemDetailModel>
                 {
                     Data = deserializedData,
-                    PageQuantity = int.Parse(httpResponseMessage.Headers.GetValues("pagesQuantity").FirstOrDefault() ?? "0")
+                    PageQuantity = pagesQuantity
                 };
             }
             else

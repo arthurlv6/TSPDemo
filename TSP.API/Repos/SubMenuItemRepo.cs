@@ -5,23 +5,29 @@ using System.Linq;
 using System.Threading.Tasks;
 using TSP.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace TSP.API.Repos
 {
-    public class SubMenuItemRepo : BaseRepo
+    public class SubMenuItemRepo : BaseRepo<SubMenuItemRepo>
     {
-        public SubMenuItemRepo(AppDbContext _dBContext, IMapper _mapper) : base(_dBContext, _mapper)
+        public SubMenuItemRepo(AppDbContext _dBContext, IMapper _mapper, ILogger<SubMenuItemRepo> logger) : base(_dBContext, _mapper,logger)
         {
-
-
         }
-        public virtual async Task<IEnumerable<M>> GetAll< M>(int subSystemId) where M : BaseModel
+        public virtual async Task<Maybe<List<M>>> GetAllAsync< M>(int subSystemId) where M : BaseModel
         {
-            return await dBContext.Set<SubMenuItem>()
-                .Where(d => d.SubSystemId==subSystemId)
-                .OrderBy(d=>d.Order)
+            try
+            {
+                return Maybe.Ok(await dBContext.Set<SubMenuItem>()
+                .Where(d => d.SubSystemId == subSystemId)
+                .OrderBy(d => d.Order)
                 .Select(d => d.ToModel<M>(mapper))
-                .ToListAsync();
+                .ToListAsync());
+            }
+            catch (Exception ex)
+            {
+                return Maybe.Fail<List<M>>(ex.Message, ex);
+            }
         }
     }
 }

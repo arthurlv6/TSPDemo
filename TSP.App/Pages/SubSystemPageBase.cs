@@ -12,7 +12,7 @@ using TSP.Shared;
 
 namespace TSP.App.Pages
 {
-    [Authorize(Policy = Policies.CanManageContent)]
+    //[Authorize(Policy = Policies.CanManageContent)]
     public class SubSystemPageBase: ParentComponentBase
     {
         [Parameter]
@@ -22,14 +22,7 @@ namespace TSP.App.Pages
         [Inject]
         protected IJSRuntime JSRuntime { get; set; }
         public IList<SubMenuItemModel> TabsModel { get; set; }
-        //protected override async Task OnInitializedAsync()
-        //{
-        //    var tokenResult = await AuthenticationService.RequestAccessToken();
-        //    tokenResult.TryGetToken(out var tokenReference);
-        //    Token = tokenReference.Value;
-        //    GlobalMsg.SetMessage();
-        //    await LoadTabs();
-        //}
+        
         protected override async Task OnParametersSetAsync()
         {
             await LoadTabs();

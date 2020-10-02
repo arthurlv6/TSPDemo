@@ -17,17 +17,21 @@ namespace TSP.API.Controllers
         }
         // GET: api/Requirement
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var temp = repo.GetAll<SubMenuItem, SubMenuItemModel>();
-            return Ok(temp);
+            var result = await repo.GetAllAsync<SubMenuItem, SubMenuItemModel>();
+            if (result.IsSuccess)
+                return Ok(result.Value);
+            return BadRequest(result.Error);
         }
 
         [HttpGet("{subSystemId}")]
         public async Task<IActionResult> GetAll(int subSystemId = 1)
         {
-            var temp = await repo.GetAll<SubMenuItemModel>(subSystemId);
-            return Ok(temp);
+            var result = await repo.GetAllAsync<SubMenuItemModel>(subSystemId);
+            if (result.IsSuccess)
+                return Ok(result.Value);
+            return BadRequest(result.Error);
         }
     }
 }

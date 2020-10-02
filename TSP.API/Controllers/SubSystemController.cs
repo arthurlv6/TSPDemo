@@ -18,7 +18,11 @@ namespace TSP.API.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(repo.GetAll<SubSystem, SubSystemModel>());
+            var result = repo.GetAllAsync<SubSystem, SubSystemModel>().Result;
+            if (result.IsSuccess)
+                return Ok(result.Value);
+            else
+                return BadRequest(result.Error);
         }
     }
 }

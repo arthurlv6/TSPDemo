@@ -8,7 +8,7 @@ using TSP.Shared;
 
 namespace TSP.App.Components
 {
-    [Authorize]
+    //[Authorize]
     public class SubSystemItemBase: ParentComponentBase
     {
         [Inject]

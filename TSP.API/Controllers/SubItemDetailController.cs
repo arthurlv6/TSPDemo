@@ -53,18 +53,19 @@ namespace TSP.API.Controllers
                 return BadRequest();
 
             var record = await repo.GetOneAsync<SubItemDetail, SubItemDetailModel>(id);
-            if (record == null)
+            if (record.Value.Id==0)
                 return NotFound();
 
-            model.ApplyTo(record, ModelState);
+            model.ApplyTo(record.Value, ModelState);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            await repo.UpdateAsync<SubItemDetail, SubItemDetailModel>(record);
+            await repo.UpdateAsync<SubItemDetail, SubItemDetailModel>(record.Value);
             return NoContent();
         }
-        [Authorize]
+
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> UploadFileAsync([FromForm] UploadProductLinkModel model)
         {
@@ -83,30 +84,11 @@ namespace TSP.API.Controllers
             string sasUrl=null;
             if (model.File != null)
             {
-                var isAzure = configuration.GetValue<string>("IsAzure");
-                if (isAzure.ToUpper() == "YES")
-                {
                     using (var stream = model.File.OpenReadStream())
                     {
                         var imageId = await imageStore.SaveImage(stream);
                         sasUrl = imageStore.UriFor(imageId);
                     }
-                }
-                else
-                {
-                    var filePath = Path.GetTempFileName();
-                    if (model.File.Length > 0)
-                    {
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            model.File.CopyToAsync(stream).Wait();
-                        }
-                    }
-                    var objectName = Guid.NewGuid().ToString() + Path.GetExtension(model.File.FileName);
-
-                    System.IO.File.Copy(filePath, Path.Combine(env.ContentRootPath, "Uploaded", objectName));
-                    sasUrl = objectName;
-                }
             }
             await repo.UpdateImageAsync(model.Id, sasUrl);
             return Ok(sasUrl);
@@ -116,25 +98,25 @@ namespace TSP.API.Controllers
         {
             var noPhoto = PhysicalFile(env.ContentRootPath + "\\uploaded\\no-photo.png", "image/jpeg");
             var temp = await repo.GetOneAsync<SubItemDetail, SubItemDetailModel>(id);
-            if (temp == null)
+            if (temp.Value.Id == 0)
             {
                 return noPhoto;
             }
-            if (string.IsNullOrEmpty(temp.Image))
+            if (string.IsNullOrEmpty(temp.Value.Image))
             {
                 return noPhoto;
             }
-            var file = env.ContentRootPath + "\\uploaded\\" + temp.Image;
+            var file = env.ContentRootPath + "\\uploaded\\" + temp.Value.Image;
             if (!System.IO.File.Exists(file))
             {
                 return noPhoto;
             }
-            return PhysicalFile(env.ContentRootPath + "\\uploaded\\" + temp.Image, "image/jpeg");
+            return PhysicalFile(env.ContentRootPath + "\\uploaded\\" + temp.Value.Image, "image/jpeg");
         }
 
         [Authorize]
         [HttpPost("detail")]
-        public async Task<IActionResult> Post([FromBody] AddDetailModel model)
+        public IActionResult Post([FromBody] AddDetailModel model)
         {
             if (model == null)
                 return BadRequest();
@@ -148,9 +130,15 @@ namespace TSP.API.Controllers
                 SubMenuItemId = model.MenuId
             };
 
-            var created = await repo.AddAsync(subItemDetailModel);
-
-            return Created("SubItemDetail", new AddDetailModel() { Id=created.Id, MenuId=created.SubMenuItemId,Name=created.Name});
+            var result = repo.Add(subItemDetailModel);
+            if (result.IsSuccess)
+            {
+                return Created("SubItemDetail", new AddDetailModel() { Id = result.Value.Id, MenuId = result.Value.SubMenuItemId, Name = result.Value.Name });
+            }
+            else
+            {
+                return BadRequest(result.Error);
+            }
         }
     }
 }

@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using TSP.Shared;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace TSP.API.Repos
 {
-    public class SubItemDetailRepo : BaseRepo
+    public class SubItemDetailRepo : BaseRepo<SubItemDetailRepo>
     {
-        public SubItemDetailRepo(AppDbContext _dBContext, IMapper _mapper) : base(_dBContext, _mapper)
+        public SubItemDetailRepo(AppDbContext _dBContext, IMapper _mapper, ILogger<SubItemDetailRepo> logger) : base(_dBContext, _mapper,logger)
         {
         }
         public async Task<Tuple<IEnumerable<M>, double>> GetPageData<M>(int SubMenuItemId = 0,int page = 1, int size = 20, string keyword = "") where M : BaseModel
@@ -32,34 +33,33 @@ namespace TSP.API.Repos
             var pagination = new PaginationModel() { Page = page, QuantityPerPage = size };
             return new Tuple<IEnumerable<M>, double>(await queryable.Where(nameExpected).Where(categoryExpected).Paginate(pagination).Select(d => d.ToModel<M>(mapper)).ToListAsync(), pagesQuantity);
         }
-        public async Task UpdateImageAsync(int id, string imagePath)
+        public async Task<Maybe<bool>> UpdateImageAsync(int id, string imagePath)
         {
             try
             {
                 var entity = dBContext.Set<SubItemDetail>().First(d => d.Id == id);
                 entity.Image = imagePath;
                 await dBContext.SaveChangesAsync();
+                return Maybe.Ok(true);
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Maybe.Fail<bool>(ex.Message);
             }
         }
-        public async Task<SubItemDetailModel> AddAsync(SubItemDetailModel model)
+        public Maybe<SubItemDetailModel> Add(SubItemDetailModel model)
         {
-            SubItemDetail detail = mapper.Map<SubItemDetail>(model);
-            //detail.Id = 0;
-
-            var addedEntity = dBContext.SubItemDetails.Add(detail);
             try
             {
-                await dBContext.SaveChangesAsync();
+                return model.Map(d => mapper.Map<SubItemDetail>(d))
+                    .Action(d => dBContext.SubItemDetails.Add(d))
+                    .Action(async d => await dBContext.SaveChangesAsync())
+                    .Map(d => Maybe.Ok(d.ToModel<SubItemDetailModel>(mapper)));
             }
             catch (Exception ex)
             {
-                throw;
+                return Maybe.Fail<SubItemDetailModel>(ex.Message);
             }
-            return addedEntity.Entity.ToModel<SubItemDetailModel>(mapper);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace TSP.API
         public static void InsertPaginationParameterInResponse(this HttpContext httpContext,
             double pagesQuantity)
         {
-            httpContext.Response.Headers.Add("pagesQuantity", pagesQuantity.ToString());
+            httpContext.Response.Headers.Add("Page-Quantity", pagesQuantity.ToString());
         }
     }
 }

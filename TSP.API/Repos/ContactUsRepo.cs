@@ -6,27 +6,28 @@ using System.Threading.Tasks;
 using TSP.Shared;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace TSP.API.Repos
 {
-    public class ContactUsRepo: BaseRepo
+    public class ContactUsRepo: BaseRepo<ContactUsRepo>
     {
-        public ContactUsRepo(AppDbContext _dBContext, IMapper _mapper) : base(_dBContext, _mapper)
+        public ContactUsRepo(AppDbContext _dBContext, IMapper _mapper,ILogger<ContactUsRepo> logger) : base(_dBContext, _mapper,logger)
         {
         }
-        public async Task<ContactUsModel> AddAsync(ContactUsModel model)
+        public async Task<Maybe<ContactUsModel>> AddAsync(ContactUsModel model)
         {
-            ContactUs detail = mapper.Map<ContactUs>(model);
-            var addedEntity = dBContext.ContactUs.Add(detail);
             try
             {
+                ContactUs detail = mapper.Map<ContactUs>(model);
+                var addedEntity = dBContext.ContactUs.Add(detail);
                 await dBContext.SaveChangesAsync();
+                return Maybe.Ok(addedEntity.Entity.ToModel<ContactUsModel>(mapper));
             }
             catch (Exception ex)
             {
-                throw;
+                return Maybe.Fail<ContactUsModel>(ex.Message);
             }
-            return addedEntity.Entity.ToModel<ContactUsModel>(mapper);
         }
     }
 }

@@ -9,17 +9,18 @@ namespace TSPServer.Services
     public class ImageStore
     {
         CloudBlobClient blobClient;
-        string baseUri = "https://tspserverstorage.blob.core.windows.net/";
+        string baseUri = "https://tspdevapistorage.blob.core.windows.net/";
 
         public ImageStore()
         {
-            var credentials = new StorageCredentials("tspserverstorage", "LIYmtBcUlNt9bUHeZmBQ7/LTtRgSJsp7+u76gKSr7wYmDdyIBu6oCBLhRaxtlcegXy1EUDgjuQU63Ze5gIoi7w==");
+            var credentials = new StorageCredentials("tspdevapistorage", "DDhuo+im5EWwsTaBUTjU+692Q2xvKPS7ulXZ0WQRYUVukJbl5grISP/f1ZAB+A1iviHomC1myt/SS+Rbn5sgpA==");
             blobClient = new CloudBlobClient(new Uri(baseUri), credentials);
         }
 
         public async Task<string> SaveImage(Stream imageStream)
         {
             var imageId = Guid.NewGuid().ToString();
+            
             var container = blobClient.GetContainerReference("images");
             var blob = container.GetBlockBlobReference(imageId);
             await blob.UploadFromStreamAsync(imageStream);

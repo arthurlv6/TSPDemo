@@ -18,7 +18,7 @@ namespace TSP.App.Components
         protected override async Task OnInitializedAsync()
         {
             var tokenResult = await AuthenticationService.RequestAccessToken();
-            tokenResult.TryGetToken(out var tokenReference);
+            if(tokenResult.TryGetToken(out var tokenReference))
             Token = tokenReference.Value;
 
             //var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();

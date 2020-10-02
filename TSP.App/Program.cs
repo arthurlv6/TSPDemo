@@ -38,19 +38,22 @@ namespace TSP.App
 
             
             builder.Services.AddHttpClient<SubSystemService>(
-                client => client.BaseAddress = new Uri("https://tsp-dev-api-server.azurewebsites.net/")) //API
+                client => client.BaseAddress = new Uri(builder.Configuration["APIServerUri"])) //API
                 .AddHttpMessageHandler<TSPApiAuthorizationMessageHandler>();
             
             builder.Services.AddHttpClient<SubMenuItemService>(
-                client => client.BaseAddress = new Uri("https://tsp-dev-api-server.azurewebsites.net/"))
+                client => client.BaseAddress = new Uri(builder.Configuration["APIServerUri"]))
                 .AddHttpMessageHandler<TSPApiAuthorizationMessageHandler>();
 
             builder.Services.AddHttpClient<SubItemDetailService>(
-                client => client.BaseAddress = new Uri("https://tsp-dev-api-server.azurewebsites.net/"))
+                client => client.BaseAddress = new Uri(builder.Configuration["APIServerUri"]))
                 .AddHttpMessageHandler<TSPApiAuthorizationMessageHandler>();
+
+            var temp = builder.Configuration["APIServerUri"];
 
             builder.Services.AddScoped<GlobalMessage>();
             await builder.Build().RunAsync();
         }
+        
     }
 }
