@@ -2,12 +2,12 @@
 
 Param(
     [string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-    [string] $ResourceGroupName = 'TSPAdmin',
+    [string] $ResourceGroupName = 'TSP.App',
     [switch] $UploadArtifacts,
     [string] $StorageAccountName,
     [string] $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts',
-    [string] $TemplateFile = 'WebSiteSQLDatabase.json',
-    [string] $TemplateParametersFile = 'WebSiteSQLDatabase.parameters.json',
+    [string] $TemplateFile = 'WebSite.json',
+    [string] $TemplateParametersFile = 'WebSite.parameters.json',
     [string] $ArtifactStagingDirectory = '.',
     [string] $DSCSourceFolder = 'DSC',
     [switch] $ValidateOnly
