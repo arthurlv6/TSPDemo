@@ -8,23 +8,22 @@
     "administratorLogin": {
       "value": "serverAdmin"
     },
-    "administratorLoginPassword": {
-      "value": "Server!1"
+    "databaseName": {
+      "value": "tsp-dev-api-database"
     },
     "sqlserverName": {
       "value": "tspdevsqlserver"
     },
-    "skuName": {
-      "value": "S1"
+    "webSiteName": {
+      "value": "tsp-dev-api-server"
     },
-    "functionName": {
-      "value": "tsp-dev-api-function"
-    },
-    "tsp-idp-databaseName": {
-      "value": "tsp-dev-idp"
-    },
-    "tsp-api-databaseName": {
-      "value": "tsp-dev-api"
+    "administratorLoginPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/d4394cc8-3832-456d-b54d-9e854be8530f/resourceGroups/TSP-RG-DEV/providers/Microsoft.KeyVault/vaults/TSP-DEV-KV1"
+        },
+        "secretName": "dev-db-password"
+      }
     },
     "tsp-api-storage": {
       "value": "tspdevapistorage"

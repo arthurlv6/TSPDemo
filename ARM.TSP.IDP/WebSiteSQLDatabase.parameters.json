@@ -1,0 +1,29 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "hostingPlanName": {
+      "value": "dev-tsp-plan"
+    },
+    "administratorLogin": {
+      "value": "serverAdmin"
+    },
+    "databaseName": {
+      "value": "tsp-dev-idp-database"
+    },
+    "sqlserverName": {
+      "value": "tspdevsqlserver"
+    },
+    "webSiteName": {
+      "value": "tsp-dev-idp-server"
+    },
+    "administratorLoginPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/d4394cc8-3832-456d-b54d-9e854be8530f/resourceGroups/TSP-RG-DEV/providers/Microsoft.KeyVault/vaults/TSP-DEV-KV1"
+        },
+        "secretName": "dev-db-password"
+      }
+    }
+  }
+}
