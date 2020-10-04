@@ -24,6 +24,7 @@
         },
         "secretName": "dev-db-password"
       }
-    }
+    },
+    "clientName": { "value": "https://tsp-dev-app.azurewebsites.net" }
   }
 }

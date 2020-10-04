@@ -60,8 +60,7 @@ namespace Marvin.IDP
             // in-memory, code config
             builder.AddInMemoryIdentityResources(Config.Ids);
             builder.AddInMemoryApiResources(Config.Apis);
-            builder.AddInMemoryClients(Config.Clients);
-             
+            builder.AddInMemoryClients(Config.Clients(Configuration));
             // not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential(); 
 

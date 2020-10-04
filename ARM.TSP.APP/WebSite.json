@@ -94,7 +94,7 @@
           "properties": {
             "OidcConfiguration__Authority": "[concat('https://',parameters('IDPSiteName'), '.azurewebsites.net')]",
             "OidcConfiguration__ClientId": "tsp",
-            "OidcConfiguration__DefaultScopes": "[parameters('scopes')]",
+            "OidcConfiguration__DefaultScopes": "[[openid,profile,email,tspapi,roleclaim]",
             "OidcConfiguration__RedirectUri": "[concat('https://',parameters('webSiteName'), '.azurewebsites.net/authentication/login-callback')]",
             "OidcConfiguration__PostLogoutRedirectUri": "[concat('https://',parameters('webSiteName'), '.azurewebsites.net/authentication/logout-callback')]",
             "OidcConfiguration__ResponseType": "code",

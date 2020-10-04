@@ -4,6 +4,7 @@
 
 using IdentityModel;
 using IdentityServer4.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace IDP
@@ -28,7 +29,7 @@ namespace IDP
                     new [] { "roleclaim" })
             };
 
-        public static IEnumerable<Client> Clients =>
+        public static IEnumerable<Client> Clients(IConfiguration Configuration) =>
             new Client[]
             { 
                 new Client
@@ -38,23 +39,10 @@ namespace IDP
                     AllowedGrantTypes = GrantTypes.Code,
                     RequireClientSecret = false,
                     RequirePkce = true,
-                    RedirectUris = { "https://tsp-dev-app.azurewebsites.net/authentication/login-callback" },
-                    PostLogoutRedirectUris = { "https://tsp-dev-app.azurewebsites.net/authentication/logout-callback" },
+                    RedirectUris = { Configuration["ClientApp"] +"/authentication/login-callback" },
+                    PostLogoutRedirectUris = { Configuration["ClientApp"] + "/authentication/logout-callback" },
                     AllowedScopes = { "openid", "profile", "email", "tspapi", "roleclaim" },
-                    AllowedCorsOrigins = { "https://tsp-dev-app.azurewebsites.net" },
-                    RequireConsent = false
-                }       ,
-                new Client
-                {
-                    ClientId = "tspDevelopment",
-                    ClientName = "tsp APP",
-                    AllowedGrantTypes = GrantTypes.Code,
-                    RequireClientSecret = false,
-                    RequirePkce = true,
-                    RedirectUris = { "https://localhost:44355/authentication/login-callback" },
-                    PostLogoutRedirectUris = { "https://localhost:44355/authentication/logout-callback" },
-                    AllowedScopes = { "openid", "profile", "email", "tspapi", "roleclaim" },
-                    AllowedCorsOrigins = { "https://localhost:44355" },
+                    AllowedCorsOrigins = { Configuration["ClientApp"] },
                     RequireConsent = false
                 }
             };
