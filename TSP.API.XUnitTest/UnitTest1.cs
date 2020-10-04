@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+using Moq;
 using System;
 using System.IO;
 using TSPServer.Services;
@@ -13,7 +15,8 @@ namespace TSP.API.XUnitTest
             String path = @"D:\a.jpg";
             using (var sr = File.OpenRead(path))
             {
-                var storage = new ImageStore();
+                var configuration = new Mock<IConfiguration>();
+                var storage = new ImageStore(configuration.Object);
                 var id=storage.SaveImage(sr).Result;
             }
         }
