@@ -30,6 +30,9 @@
     },
     "storageKey": {
       "value": "a7XuyZ0n5ZmeB/mYQPBsIqV1CZVi/YQbmqwYiTslsJQWlJiqpZHtMBBLueZzuk0Eu3hnV2rUEjuxjPU23YWMbw=="
+    },
+    "idp": {
+      "value": "https://tsp-dev-idp-server.azurewebsites.net"
     }
   }
 }
