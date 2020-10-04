@@ -13,13 +13,13 @@ namespace TSPServer.Services
         CloudBlobClient blobClient;
         string baseUri = "https://tspdevapistorage.blob.core.windows.net/";
 
-        public ImageStore(IConfiguration configuration)
+        public ImageStore(IConfiguration _configuration)
         {
+            configuration = _configuration;
             var storageAccountName= configuration["StorageAccount"];
             baseUri = $"https://{storageAccountName}.blob.core.windows.net/";
             var credentials = new StorageCredentials(storageAccountName, configuration["StorageKey"]);
             blobClient = new CloudBlobClient(new Uri(baseUri), credentials);
-            this.configuration = configuration;
         }
 
         public async Task<string> SaveImage(Stream imageStream)
