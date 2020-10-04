@@ -1,5 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 
 @inject NavigationManager Navigation
 @inject SignOutSessionStateManager SignOutManager
@@ -10,15 +12,24 @@
         <button class="nav-link btn btn-link" @onclick="BeginSignOut">Log out</button>
     </Authorized>
     <NotAuthorized>
-        <a href="https://tsp-dev-idp-server.azurewebsites.net/Identity/Account/register">Register</a>
-        <a href="authentication/login">Log in</a>
+        <a href=@regLink>Register</a>
+        <a href=@loginLink>Log in</a>
     </NotAuthorized>
 </AuthorizeView>
 
 @code{
+    private string loginLink, regLink;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        loginLink = Configuration["OidcConfiguration.Authority"] + "/authentication/login";
+        regLink = Configuration["OidcConfiguration.Authority"] + "/Identity/Account/Register";
+    }
+
     private async Task BeginSignOut(MouseEventArgs args)
     {
         await SignOutManager.SetSignOutState();
-        Navigation.NavigateTo("authentication/logout");
+        Navigation.NavigateTo(Configuration["OidcConfiguration.Authority"] + "/authentication/logout");
     }
 }

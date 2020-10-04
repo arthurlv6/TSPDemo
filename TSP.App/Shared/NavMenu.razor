@@ -1,5 +1,6 @@
 ﻿
-
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">TSP Dashboard</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -26,32 +27,32 @@
                         <span class="oi oi-list-rich" aria-hidden="true"></span> Revolution
                     </NavLink>
                 </li>
-                
+
             </Authorized>
         </AuthorizeView>
         <AuthorizeView Policy="@Policies.CanManageContent">
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="SubSystemPage/4">
-                        <span class="oi oi-people" aria-hidden="true"></span> Staff
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="SubSystemPage/5">
-                        <span class="oi oi-media-record" aria-hidden="true"></span> Media
-                    </NavLink>
-                </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="SubSystemPage/4">
+                    <span class="oi oi-people" aria-hidden="true"></span> Staff
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="SubSystemPage/5">
+                    <span class="oi oi-media-record" aria-hidden="true"></span> Media
+                </NavLink>
+            </li>
         </AuthorizeView>
         <AuthorizeView>
             <NotAuthorized>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link"
-                             href="authentication/login">
+                             href=@loginLink>
                         <span class="oi oi-list-rich" aria-hidden="true"></span> Log in
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link"
-                             href="https://tsp-dev-idp-server.azurewebsites.net/Identity/Account/Register">
+                             href=@regLink>
                         <span class="oi oi-list-rich" aria-hidden="true"></span> Register
                     </NavLink>
                 </li>
@@ -66,7 +67,14 @@
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string loginLink, regLink;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        loginLink = Configuration["OidcConfiguration.Authority"] + "/authentication/login";
+        regLink = Configuration["OidcConfiguration.Authority"] + "/Identity/Account/Register";
+    }
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
