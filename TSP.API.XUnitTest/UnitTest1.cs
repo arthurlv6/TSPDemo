@@ -12,13 +12,13 @@ namespace TSP.API.XUnitTest
         [Fact]
         public void ImageSave()
         {
-            String path = @"D:\a.jpg";
-            using (var sr = File.OpenRead(path))
-            {
-                var configuration = new Mock<IConfiguration>();
-                var storage = new ImageStore(configuration.Object);
-                var id=storage.SaveImage(sr).Result;
-            }
+            //String path = @"D:\a.jpg";
+            //using (var sr = File.OpenRead(path))
+            //{
+            //    var configuration = new Mock<IConfiguration>();
+            //    var storage = new ImageStore(configuration.Object);
+            //    var id=storage.SaveImage(sr).Result;
+            //}
         }
     }
 }
