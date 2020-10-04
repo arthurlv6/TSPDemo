@@ -97,6 +97,9 @@
     "tsp-api-storage": {
       "type": "string",
       "defaultValue": "tspdevapistorage"
+    },
+    "storageKey": {
+      "type": "string"
     }
   },
   
@@ -188,6 +191,8 @@
             "[resourceId('Microsoft.Web/Sites/', parameters('webSiteName'))]"
           ],
           "properties": {
+            "StorageAccount": "[parameters('tsp-api-storage')]",
+            "StorageKey": "[parameters('storageKey')]",
             "ConnectionStrings__DefaultConnection": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', parameters('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('administratorLogin'), '@', parameters('sqlserverName'), ';Password=', parameters('administratorLoginPassword'), ';')]"
           }
         }

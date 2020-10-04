@@ -20,13 +20,16 @@
     "administratorLoginPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/d4394cc8-3832-456d-b54d-9e854be8530f/resourceGroups/TSP-RG-DEV/providers/Microsoft.KeyVault/vaults/TSP-DEV-KV1"
+          "id": "/subscriptions/d4394cc8-3832-456d-b54d-9e854be8530f/resourceGroups/TSP-RG-DEV/providers/Microsoft.KeyVault/vaults/TSP-DEV-VK"
         },
         "secretName": "dev-db-password"
       }
     },
     "tsp-api-storage": {
       "value": "tspdevapistorage"
+    },
+    "storageKey": {
+      "value": "a7XuyZ0n5ZmeB/mYQPBsIqV1CZVi/YQbmqwYiTslsJQWlJiqpZHtMBBLueZzuk0Eu3hnV2rUEjuxjPU23YWMbw=="
     }
   }
 }
