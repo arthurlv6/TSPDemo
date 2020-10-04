@@ -44,6 +44,9 @@
     "scopes": {
       "type": "string",
       "defaultValue": "[[openid,profile,email,tspapi,roleclaim]"
+    },
+    "apiUri": {
+      "type": "string"
     }
   },
 
@@ -98,7 +101,8 @@
             "OidcConfiguration__RedirectUri": "[concat('https://',parameters('webSiteName'), '.azurewebsites.net/authentication/login-callback')]",
             "OidcConfiguration__PostLogoutRedirectUri": "[concat('https://',parameters('webSiteName'), '.azurewebsites.net/authentication/logout-callback')]",
             "OidcConfiguration__ResponseType": "code",
-            "UserOptions__NameClaim": "email"
+            "UserOptions__NameClaim": "email",
+            "APIServerUri": "[parameters('apiUri')]"
           }
         }
       ]

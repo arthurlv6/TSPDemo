@@ -10,6 +10,9 @@
     },
     "IDPSiteName": {
       "value": "tsp-dev-idp-server"
+    },
+    "apiUri": {
+      "value": "https://tsp-dev-api-server.azurewebsites.net/"
     }
   }
 }
