@@ -60,6 +60,7 @@
     <Folder Include="Properties" />
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
+    <Folder Include="dbo\Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\__EFMigrationsHistory.sql" />
@@ -67,5 +68,6 @@
     <Build Include="dbo\Tables\SubSystems.sql" />
     <Build Include="dbo\Tables\SubMenuItems.sql" />
     <Build Include="dbo\Tables\SubItemDetails.sql" />
+    <Build Include="dbo\Scripts\SeedForContactUs.sql" />
   </ItemGroup>
 </Project>
